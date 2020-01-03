@@ -4,7 +4,8 @@ import Form from './components/form/Form';
 import './App.css'
 import Weather from './components/weather/Weather';
 
-const APT_KEY = '81ce2d01f8780452156dba375a7acdd6';
+console.log('process.env', process.env.NODE_ENV);
+const API_KEY = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_API_KEY : null;
 
 class App extends Component {
   state = {
@@ -19,8 +20,8 @@ class App extends Component {
     e.preventDefault();
     const city = e.target.elements.city.value;
     const country = e.target.elements.country.value;
-    if(city && country) {
-      const api_call = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${APT_KEY}&units=metric`);
+    try {
+      const api_call = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${API_KEY}&units=metric`);
       const data = await api_call.json();
       this.setState({
         temperature: data.main.temp,
@@ -30,14 +31,14 @@ class App extends Component {
         description: data.weather[0].description,
         error: ""
       });
-    } else {
+    } catch(err) {
       this.setState({
         temperature: undefined,
         city: undefined,
         country: undefined,
         humidity: undefined,
         description: undefined,
-        error: 'Please enter the values'
+        error: 'Please enter the values correctly'
       })
     }
   }
@@ -47,12 +48,12 @@ class App extends Component {
       <div>
         <div className="wrapper">
           <div className="main">
-            <div className="container-sm container-md container-xl">
+            <div className="containerxl">
               <div className="row">
-                <div className="col-xs-5 col-md-5 col-xl-5 title-container">
+                <div className="col-12 col-sm-5 col-md-5 col-xl-5 title-container">
                 <Titles />
                 </div>
-                <div className="col-xs-7 col-md-7 col-xl-7  form-container">
+                <div className="col-12 col-sm-7 col-md-7 col-xl-7  form-container">
                 <Form getWeather={this.getWeather}/>
                 <Weather 
                   temperature={temperature}
